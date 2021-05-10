@@ -139,7 +139,7 @@
                 {{ t.name }} - USD
               </dt>
               <dd class="mt-1 text-3xl font-semibold text-gray-900">
-                {{ formatPrice(+t.price) }}
+                {{ formatPrice(t.price) }}
               </dd>
             </div>
             <div class="w-full border-t border-gray-200"></div>
@@ -284,14 +284,17 @@ export default {
       this.tickers
         .filter((t) => t.name === tickerName)
         .forEach((t) => {
-          t.price = price;
+          if (t === this.selectedTicker) {
+            this.graph.push(price);
+          }
+          t.price = price ?? "-";
         });
     },
     formatPrice(price) {
       if (price === "-") {
         return price;
       }
-      return price > 1 ? price.toFixed(2) : price.toPrecision(2);
+      return +price > 1 ? price.toFixed(2) : price.toPrecision(2);
     },
     add() {
       const currentTicker = {
@@ -305,7 +308,7 @@ export default {
       } else {
         this.tickers = [...this.tickers, currentTicker];
       }
-      
+
       this.filter = "";
       subscribeToTicker(currentTicker.name, (newPrice) =>
         this.updateTicker(currentTicker.name, newPrice)
